@@ -1,33 +1,29 @@
 AWSTemplateFormatVersion: 2010-09-09
-
-​Description: |
-  CloudFormation Template for Roman Numerals Converter Application. 
-  This template creates Python Flask Web Application on Amazon Linux 2023  
-  EC2 Instance with custom security group allowing http connections on port 80, 8080 and SSH connection on port 22. Roman Numerals Converter Application is downloaded from Github repository, then installed on Flask.
-
-​Parameters: 
-  latestAmiId:
+Description: |
+  Flask uygulamasi ile instance ayaga kaldirma
+Parameters:
+  LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64'
-​  keyName:
-    Description: Chose your key pair
+  KeyName:
+    Description: choose your Key Pair
     Type: AWS::EC2::KeyPair::KeyName
-    Default: firstkey
 
-​Resources:
-  myWebServer:
+Resources:
+  Webserver:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !Ref latestAmiId
+      ImageId: !Ref LatestAmiId
       InstanceType: t2.micro
-      KeyName: !Ref keyName
+      KeyName: !Ref KeyName
       SecurityGroupIds: 
-        - !Ref mySecGrp
+        - !Ref MySecGrp
       Tags: 
         - Key: Name
-          Value: !Sub Web Server of ${AWS::StackName} Stack 
+          Value: !Sub Web Server of ${AWS::StackName}
       UserData: !Base64 |
         #!/bin/bash
+        
         yum update -y
         yum install python3 -y
         yum install python3-pip -y
@@ -38,29 +34,27 @@ AWSTemplateFormatVersion: 2010-09-09
         wget -P templates https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/templates/result.html
         wget https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/roman-numerals-converter-app.py
         python3 roman-numerals-converter-app.py
+        
+  
 
-​  mySecGrp:
+  MySecGrp:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: ssh http and port 8080 # Required
-      GroupName: muratsecgrpromen
+      GroupDescription: Ssh Http # Required
       SecurityGroupIngress: 
         - IpProtocol: tcp
-          FromPort: 80
+          FromPort: 22
           ToPort: 80
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
+
         - IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
           CidrIp: 0.0.0.0/0
-  
+
+
 Outputs:
-  WebsiteURL:
+  DnsName:
     Value: !Sub 
-      - http://${PIA}
-      - PIA: !GetAtt myWebServer.PublicDnsName
-    Description: Roman Numerals Converter Application URL
+      - http://${PublicAddress}
+      - PublicAddress: !GetAtt Webserver.PublicDnsName
