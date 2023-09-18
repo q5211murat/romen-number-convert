@@ -14,18 +14,18 @@ Parameters:
     Description: Choose your key pair
     Type:AWS::EC2::KeyPair::KeyNameDefault: firstkey
 
-Resources: 
+Resources:
   myWebServer:
     Type: AWS::EC2::Instance
-  Properties:
-    ImageId: ! Ref lastestAmiId
-    InstanceType: t2.micro
-    KeyName: ! Ref keyName
-    SecurityGroupIds:
-      - ! Ref mySecGrp
-    Tags:
-      - Key: Name
-        Value: ! Sub Web Server of ${AWS::StackName} Stack
+    Properties:
+      ImageId: ! Ref lastestAmiId
+      InstanceType: t2.micro
+      KeyName: ! Ref keyName
+      SecurityGroupIds:
+        - ! Ref mySecGrp
+      Tags:
+        - Key: Name
+          Value: ! Sub Web Server of ${AWS::StackName} Stack
     UserData: !Base64 |
       #! /bin/bash
       yum update -y
