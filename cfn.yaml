@@ -7,62 +7,60 @@ Description: |
 
 Parameters:
   latestAmiId:
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64'
-  
+    Type: "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>"
+    Default: "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+
   KeyName:
     Description: Choose your key pair
     Type:AWS::EC2::KeyPair::KeyNameDefault: firstkey
 
-
 Resources:
 myWebServer:
-    Type: AWS::EC2::Instance
-    Properties:
-      ImageId: ! Ref lastestAmiId
-      InstanceType: t2.micro
-      KeyName: ! Ref keyName
-      SecurityGroupIds: 
-        - ! Ref mySecGrp
-      Tags: 
-        - Key: Name
-          Value: ! Sub Web Server of ${AWS::StackName} Stack
-      UserData: !Base64 |
-        #! /bin/bash
-        yum update -y
-        yum install python3 -y
-        yum install python3-pip -y
-        pip3 install flask
-        yum install git -y
-        cd /home/ec2-user
-        wget -P templates https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/templates/index.html
-        wget -P templates https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/templates/result.html
-        wget https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/roman-numerals-converter-app.py
-        python3 app.py
+  Type: AWS::EC2::Instance
+  Properties:
+    ImageId: ! Ref lastestAmiId
+    InstanceType: t2.micro
+    KeyName: ! Ref keyName
+    SecurityGroupIds:
+      - ! Ref mySecGrp
+    Tags:
+      - Key: Name
+        Value: ! Sub Web Server of ${AWS::StackName} Stack
+    UserData: !Base64 |
+      #! /bin/bash
+      yum update -y
+      yum install python3 -y
+      yum install python3-pip -y
+      pip3 install flask
+      yum install git -y
+      cd /home/ec2-user
+      wget -P templates https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/templates/index.html
+      wget -P templates https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/templates/result.html
+      wget https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/roman-numerals-converter-app.py
+      python3 app.py
 
-      
-  mySecGrp:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: ssh http and port 8080 # Required
-      GroupName: muratsecgrpromen
-      SecurityGroupIngress: 
-        - IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 22
-          ToPort: 22
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
-          CidrIp: 0.0.0.0/0
+mySecGrp:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: ssh http and port 8080 # Required
+    GroupName: muratsecgrpromen
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8080
+        ToPort: 8080
+        CidrIp: 0.0.0.0/0
 
 Outputs:
   WebsiteURL:
     Value: !Sub
       - http://${PIA}
-      - PIA: !GetAtt WebServerHost.PublicDnsName
+      - PIA: ! GetAtt WebServerHost.PublicDnsName
     Description: Roman Numerals Converter Application URL
