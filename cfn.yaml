@@ -14,9 +14,9 @@ Parameters:
     Description: Choose your key pair
     Type:AWS::EC2::KeyPair::KeyNameDefault: firstkey
 
-Resources:
-myWebServer:
-  Type: AWS::EC2::Instance
+Resources: 
+  myWebServer:
+    Type: AWS::EC2::Instance
   Properties:
     ImageId: ! Ref lastestAmiId
     InstanceType: t2.micro
