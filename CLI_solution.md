@@ -83,7 +83,8 @@ python3 app.py
 - Now we can run the instance with CLI command. (Do not forget to create userdata.sh under "/home/ec2-user/" folder before run this command)
 
 ```bash
-aws ec2 run-instances --image-id ami-04cb4ca688797756f --count 1 --instance-type t2.micro --key-name firstkey --security-groups roman_numbers_sec_grp --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=roman_numbers}]' --user-data file:///home/ec2-user/romen-number-convert/userdata.sh
+aws ec2 run-instances --image-id ami-04cb4ca688797756f --count 1 --instance-type t2.micro --key-name firstkey --security-groups roman_numbers_sec_grp --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=roman_numbers}]' --user-data wget https://raw.githubusercontent.com/q5211murat/romen-number-convert/main/roman-numerals-converter-app.py
+python3 roman-numerals-converter-app.py
 
 or
 
